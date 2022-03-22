@@ -39,21 +39,31 @@ const App = () => {
         const newPerson = { ...person, number: newPhone };
         notes
           .update(newPerson)
-          .then(() =>
+          .then((updatedPerson) => {
             setPersons(
-              persons.map((p) => (p.id !== newPerson.id ? p : newPerson))
-            )
-          );
-        notify({ message: `Updated ${newName}`, type: "success" });
-        resetInputs();
+              persons.map((p) =>
+                p.id !== updatedPerson.id ? p : updatedPerson
+              )
+            );
+            notify({ message: `Updated ${newName}`, type: "success" });
+            resetInputs();
+          })
+          .catch((e) => {
+            notify({ message: e.response.data.error, type: "error" });
+          });
       }
     } else {
       const person = { name: newName, number: newPhone };
-      notes.create(person).then((res) => {
-        setPersons(persons.concat(res));
-      });
-      notify({ message: `Added ${newName}`, type: "success" });
-      resetInputs();
+      notes
+        .create(person)
+        .then((res) => {
+          setPersons(persons.concat(res));
+          notify({ message: `Added ${newName}`, type: "success" });
+          resetInputs();
+        })
+        .catch((e) => {
+          notify({ message: e.response.data.error, type: "error" });
+        });
     }
   };
 
